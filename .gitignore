@@ -1,0 +1,33 @@
+# Environment files
+backend/.env
+frontend/.env
+.env
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Python virtual environments
+backend/.venv/
+backend/venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build output
+frontend/dist/
+frontend/dist-ssr/
+
+# LangGraph
+backend/.langgraph_api/
+
+# Logs
+*.log
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.sw?

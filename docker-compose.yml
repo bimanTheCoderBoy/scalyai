@@ -1,0 +1,51 @@
+name: scalyai
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: scalyai_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-scalyai}
+      POSTGRES_USER: ${POSTGRES_USER:-scalyai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scalyai}
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - scalyai
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scalyai} -d ${POSTGRES_DB:-scalyai}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  redis:
+    image: redis:7-alpine
+    container_name: scalyai_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - scalyai
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+
+
+
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  scalyai:
+    driver: bridge
