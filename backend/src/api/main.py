@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from core.logger import get_scaly_logger
 logger = get_scaly_logger(name=__name__)
 from contextlib import asynccontextmanager
@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.exceptions import BaseAppException, handle_api_exception, handle_api_generic_exception
 from db import init_db
 from api.v1.webhooks.clerk import router as webhooks_router
+from api.routes.upload import upload_file
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,3 +40,8 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+router = APIRouter()
+
+router.add_api_route("/upload", upload_file, methods=["POST"])
+
+app.include_router(router)
