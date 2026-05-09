@@ -4,7 +4,7 @@ from core.logger import get_scaly_logger
 logger = get_scaly_logger(name=__name__)
 
 
-router = APIRouter(prefix="/webhooks/clerk", tags=["webhooks/clerk"])
+router = APIRouter(prefix="/webhooks/clerk", tags=["webhooks"])
 
 @router.post("/")
 async def webhook_clerk(request: Request):

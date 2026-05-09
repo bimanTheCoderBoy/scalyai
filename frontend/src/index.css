@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
+
+/* ============================================================
+   shadcn dark-mode variant: activates when .dark is on <html>
+   (managed by next-themes ThemeProvider)
+   ============================================================ */
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   LIGHT MODE (default)
+   These values are used when the app is NOT in dark mode.
+   Currently ScalyAi is dark-first, but these exist so that
+   light mode "just works" if you ever enable it.
+   ============================================================ */
+:root {
+  /* -- Page background: white */
+  --background: oklch(1 0 0);
+  /* -- Main body text: near-black */
+  --foreground: oklch(0.145 0 0);
+
+  /* -- Card / panel surfaces */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+
+  /* -- Popover / dropdown surfaces */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  /* -- Primary action color (buttons, links) */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* -- Secondary surfaces (secondary buttons, subtle areas) */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+
+  /* -- Muted areas (disabled, de-emphasized content) */
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+
+  /* -- Accent: hover highlights, active states */
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  /* -- Destructive: delete buttons, error states */
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* -- Borders: cards, inputs, dividers */
+  --border: oklch(0.922 0 0);
+  /* -- Input field borders specifically */
+  --input: oklch(0.922 0 0);
+  /* -- Focus ring color */
+  --ring: oklch(0.708 0 0);
+
+  /* -- Chart colors (for data visualization) */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+
+  /* -- Border radius base (all radii derive from this) */
+  --radius: 0.625rem;
+
+  /* -- Sidebar-specific colors (for app sidebar/nav) */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* --------------------------------------------------------
+     ScalyAi EXTRA TOKENS (not part of shadcn)
+     Use these for status badges, pipeline states, custom UI
+     -------------------------------------------------------- */
+
+  /* -- Success: positive states ("Interested", "Replied", completed) */
+  --success: #10B981;
+  --success-foreground: #FFFFFF;
+
+  /* -- Warning: pending states ("Contacted", needs attention) */
+  --warning: #F59E0B;
+  --warning-foreground: #FFFFFF;
+
+  /* -- Surface hover: slightly lighter bg for row/card hover effects */
+  --surface-hover: oklch(0.95 0 0);
+}
+
+/* ============================================================
+   DARK MODE — ScalyAi Production Theme
+   ============================================================
+   Philosophy: muted dark palette that feels premium and
+   business-grade. Inspired by Linear, Stripe, Notion.
+   - Deep blue-black background (#0B0F14)
+   - Layered surfaces (#111827)
+   - Indigo accent (#6366F1) — builds trust
+   - High readability for data-dense dashboards
+   ============================================================ */
+.dark {
+  /* -- Page background: deep blue-black (premium dark feel)
+     Change this to make the entire app lighter/darker */
+  --background: oklch(0.085 0.01 260);     /* #0B0F14 */
+
+  /* -- Main body text: light gray (high readability on dark bg)
+     This is used by all body text, headings, table content */
+  --foreground: oklch(0.918 0.005 265);     /* #E5E7EB */
+
+  /* -- Card / panel surface: slightly lighter than background
+     Creates visual layering — cards "float" above the bg
+     Used by: Card, Dialog, Sheet, any panel component */
+  --card: oklch(0.155 0.015 260);           /* #111827 */
+  --card-foreground: oklch(0.918 0.005 265); /* same as foreground */
+
+  /* -- Popover / dropdown surface: matches card for consistency */
+  --popover: oklch(0.155 0.015 260);        /* #111827 */
+  --popover-foreground: oklch(0.918 0.005 265);
+
+  /* -- Primary action: Indigo (#6366F1)
+     THE main brand color. Used by: primary Button, links,
+     focus rings, active indicators. Indigo conveys trust
+     and professionalism (used by Stripe, Linear, Vercel) */
+  --primary: oklch(0.55 0.25 265);          /* #6366F1 */
+  --primary-foreground: oklch(1 0 0);       /* pure white text on indigo */
+
+  /* -- Secondary: subtle dark surface for secondary buttons,
+     toggle groups, de-emphasized interactive elements */
+  --secondary: oklch(0.215 0.015 260);      /* #1F2937 */
+  --secondary-foreground: oklch(0.7 0.005 265); /* #9CA3AF (muted gray) */
+
+  /* -- Muted: de-emphasized text and disabled areas
+     Used for: helper text, timestamps, placeholders */
+  --muted: oklch(0.215 0.015 260);          /* #1F2937 */
+  --muted-foreground: oklch(0.7 0.005 265); /* #9CA3AF */
+
+  /* -- Accent: hover/active highlights on interactive elements
+     Same as secondary so hover states blend smoothly */
+  --accent: oklch(0.215 0.015 260);         /* #1F2937 */
+  --accent-foreground: oklch(0.918 0.005 265); /* #E5E7EB */
+
+  /* -- Destructive: danger actions (delete, pause, errors)
+     Red that's visible but not alarming on dark bg */
+  --destructive: oklch(0.63 0.24 25);       /* #EF4444 */
+
+  /* -- Borders: subtle dividers between sections
+     Used by: Card borders, Table dividers, Input outlines
+     Should be barely visible — just enough to create structure */
+  --border: oklch(0.25 0.015 260);          /* #1F2937 */
+
+  /* -- Input borders: same as border for dark mode consistency */
+  --input: oklch(0.25 0.015 260);           /* #1F2937 */
+
+  /* -- Focus ring: indigo to match primary
+     Shows on keyboard focus for accessibility */
+  --ring: oklch(0.55 0.25 265);             /* #6366F1 */
+
+  /* -- Chart colors: grayscale gradient for data visualization
+     Lightest to darkest, for bar charts / line charts */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+
+  /* -- Sidebar: slightly lighter than background
+     for the navigation sidebar panel */
+  --sidebar: oklch(0.12 0.015 260);          /* between bg and card */
+  --sidebar-foreground: oklch(0.918 0.005 265);
+  /* -- Sidebar active item: indigo (matches primary) */
+  --sidebar-primary: oklch(0.55 0.25 265);   /* #6366F1 */
+  --sidebar-primary-foreground: oklch(1 0 0);
+  /* -- Sidebar hover: subtle highlight */
+  --sidebar-accent: oklch(0.215 0.015 260);  /* #1F2937 */
+  --sidebar-accent-foreground: oklch(0.918 0.005 265);
+  --sidebar-border: oklch(0.25 0.015 260);   /* #1F2937 */
+  --sidebar-ring: oklch(0.55 0.25 265);
+
+  /* --------------------------------------------------------
+     ScalyAi EXTRA TOKENS — Dark Mode
+     -------------------------------------------------------- */
+
+  /* -- Success: green for positive pipeline states
+     Use with: bg-success, text-success, bg-success/15
+     Examples: "Interested", "Replied", "Deal Won" badges */
+  --success: #10B981;
+  --success-foreground: #FFFFFF;
+
+  /* -- Warning: amber for pending/attention states
+     Use with: bg-warning, text-warning, bg-warning/15
+     Examples: "Contacted", "Needs Follow-up" badges */
+  --warning: #F59E0B;
+  --warning-foreground: #FFFFFF;
+
+  /* -- Surface hover: for row hover effects in tables, lists
+     Slightly lighter than card bg so hovered rows stand out
+     Use with: hover:bg-surface-hover */
+  --surface-hover: oklch(0.19 0.015 260);    /* #1a2234 */
+}
+
+/* ============================================================
+   TAILWIND THEME REGISTRATION
+   Maps CSS variables → Tailwind utility classes
+   so you can use bg-background, text-foreground, etc.
+   ============================================================ */
+@theme inline {
+  /* -- Font: Geist (modern, clean, similar to Inter) */
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+
+  /* -- Core color utilities */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* -- Chart utilities: bg-chart-1, text-chart-2, etc. */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* -- Sidebar utilities */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* -- ScalyAi extra token utilities
+     These generate: bg-success, text-success, bg-warning, etc. */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-surface-hover: var(--surface-hover);
+
+  /* -- Border radius scale (all derive from --radius) */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ============================================================
+   BASE LAYER — global resets applied to all elements
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
