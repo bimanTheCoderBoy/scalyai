@@ -7,16 +7,18 @@ from core.exceptions import BaseAppException, handle_api_exception, handle_api_g
 from db import init_db
 from api.v1.webhooks.clerk import router as webhooks_router
 from api.routes.upload import upload_file
+from core.redis import init_redis, close_redis
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    await init_redis()
     logger.info("Starting ScalyAi API Server...")
     
     yield
 
     logger.info("Shutting down ScalyAi API Server...")
-
+    await close_redis()
 
 
 def create_app() -> FastAPI:

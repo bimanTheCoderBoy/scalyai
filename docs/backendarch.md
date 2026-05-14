@@ -93,4 +93,37 @@ Service → raises business errors
 API → returns HTTP errors
  Example: 
       
+src/
+├── api/
+│   ├── deps.py
+│   ├── routes/
+│   └── v1/
+│
+├── core/
+│   ├── config.py
+│   ├── logger.py
+│   ├── security.py
+│   ├── redis.py         
+│   ├── celery.py         
+│
+├── db/
+│   ├── session.py
+│   ├── base.py
+│
+├── models/
+├── schemas/
+│
+├── repositories/         
+│
+├── services/             
+│
+├── events/               
+│   ├── dispatcher.py
+│   └── handlers/
+│
+├── workers/              
+│   └── tasks/
+│          
+│
+├── agents/               
   

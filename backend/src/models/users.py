@@ -1,14 +1,16 @@
+from tkinter import S
 from db import Base, BaseModelMixin
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from .business_invites import BusinessInvite
+from typing import Optional
 
 class User(BaseModelMixin,Base):
     __tablename__ = "users"
 
     clerk_id: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index= True)
 
 

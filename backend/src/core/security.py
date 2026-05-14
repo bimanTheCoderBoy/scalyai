@@ -1,7 +1,8 @@
 from svix.webhooks import Webhook, WebhookVerificationError
 from core.exceptions.exceptions import WebHookInvalidSignatureException
+from core.config import clerk_config
 
-CLERK_WEBHOOK_SECRET = "your_secret"
+CLERK_WEBHOOK_SECRET = clerk_config.CLERK_WEBHOOK_SECRET
 
 def verify_clerk_webhook(payload, headers):
     try:
