@@ -1,9 +1,15 @@
+import { useEffect } from "react"
 import { useAuth } from "@clerk/react"
 import { Navigate, Outlet } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+import { setTokenGetter } from "@/api/client"
 
 export function ProtectedRoute() {
-  const { isLoaded, isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
+
+  useEffect(() => {
+    setTokenGetter(() => getToken())
+  }, [getToken])
 
   if (!isLoaded) {
     return (
