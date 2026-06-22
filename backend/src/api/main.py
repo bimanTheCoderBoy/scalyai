@@ -7,6 +7,7 @@ from core.exceptions import BaseAppException, handle_api_exception, handle_api_g
 from db import init_db
 from api.v1.webhooks.clerk import router as webhooks_router
 from api.routes.upload import upload_file
+from api.middleware.auth import ClerkAuthMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,6 +27,7 @@ def create_app() -> FastAPI:
         version="0.1.0",
         lifespan=lifespan
     )
+    app.add_middleware(ClerkAuthMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

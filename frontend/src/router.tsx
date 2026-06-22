@@ -9,6 +9,7 @@ import Settings from "@/pages/Settings"
 import Login from "@/pages/Login"
 import Signup from "@/pages/Signup"
 import SSOCallback from "@/pages/SSOCallback"
+import GetStarted from "@/pages/GetStarted"
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           { path: "conversations", element: <Conversations /> },
           { path: "activity", element: <Activity /> },
           { path: "settings", element: <Settings /> },
+          { path: "get-started", element: <GetStarted /> },
         ],
       },
     ],

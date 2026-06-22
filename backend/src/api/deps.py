@@ -7,18 +7,18 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-# from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends, HTTPException, status, Request
 
-# def get_current_user(request: Request):
-#     user = request.state.user  # set by middleware
+def get_current_user(request: Request):
+    user = request.state.user  # set by middleware
 
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Unauthorized"
-#         )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized"
+        )
 
-#     return user
+    return user
 
 
 
