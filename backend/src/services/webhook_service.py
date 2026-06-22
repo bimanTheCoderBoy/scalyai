@@ -16,9 +16,9 @@ class WebhookService:
         self.event_repo = event_repo
 
     async def ingest(self, event: WebhookEventDTO):
-        if await self.cache_repo.is_duplicate(event.event_id):
-            logger.info(f"Event {event.event_id} is a duplicate")
-            return
+        # if await self.cache_repo.is_duplicate(event.event_id):
+        #     logger.info(f"Event {event.event_id} is a duplicate")
+        #     return
 
         event_obj = WebhookEvent(
             event_id=event.event_id,

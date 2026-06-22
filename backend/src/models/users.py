@@ -1,4 +1,3 @@
-from tkinter import S
 from db import Base, BaseModelMixin
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String

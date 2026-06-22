@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Request, Depends, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from core.logger import get_scaly_logger
 from core.security import verify_clerk_webhook
 from schemas.webhook_schema import WebhookEventDTO, WebhookEventStatus
 from core.exceptions.exceptions import InvalidWebhookPayloadException, WebhookEventCreationFailedException
-from api.deps import get_webhook_service, get_db
-from services.webhook_service import WebhookService
+from api.deps import get_webhook_uow
+from api.deps.uow.webhook_uow import WebhookUnitOfWork
 from datetime import datetime
 
 logger = get_scaly_logger(name=__name__)
@@ -16,8 +15,7 @@ router = APIRouter(prefix="/webhooks/clerk", tags=["webhooks"])
 @router.post("/")
 async def webhook_clerk(
     request: Request,
-    webhook_service: WebhookService = Depends(get_webhook_service),
-    db: AsyncSession = Depends(get_db),
+    uow: WebhookUnitOfWork = Depends(get_webhook_uow),
 ):
     payload = await request.body()
     headers = request.headers
@@ -37,12 +35,12 @@ async def webhook_clerk(
     except Exception:
         raise InvalidWebhookPayloadException()
 
-    await webhook_service.ingest(schema)
-
-    try:
-        await db.commit()
-    except Exception:
-        await db.rollback()
-        raise WebhookEventCreationFailedException()
+    async with uow:
+        await uow.webhook_service.ingest(schema)
+        try:
+            await uow.commit()
+        except Exception:
+            await uow.rollback()
+            raise WebhookEventCreationFailedException()
 
     return JSONResponse(content="Webhook received and ingested", status_code=status.HTTP_202_ACCEPTED)

@@ -1,7 +1,7 @@
 from enum import Enum
 from db import Base, BaseModelMixin
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, Index
+from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, Index , PrimaryKeyConstraint
 from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
 
@@ -28,5 +28,5 @@ class BusinessUserMapping(BaseModelMixin,Base):
     # Constraints
     __table_args__ = (
         UniqueConstraint("user_id", "business_id", name="uix_user_business_mapping"),
-       
+        PrimaryKeyConstraint("user_id", "business_id"),
     )
