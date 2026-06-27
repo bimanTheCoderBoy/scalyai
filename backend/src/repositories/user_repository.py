@@ -1,10 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.users import User
+from models.business_user_mappings import BusinessUserMapping
+from models.businesses import Business
 from sqlalchemy.exc import IntegrityError,SQLAlchemyError
 from core.logger import get_scaly_logger
 from core.exceptions.exceptions import UserCreationFailedException, UserAlreadyExistsException
 from sqlalchemy import select
-from typing import Optional
+from typing import Optional, Tuple
 logger = get_scaly_logger(name=__name__)
 
 class UserRepository:
@@ -27,6 +29,11 @@ class UserRepository:
         stmt = select(User).where(User.clerk_id == clerk_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+    
+    async def get_user_and_business_by_clerk_id(self, clerk_id: str) -> Optional[Tuple[User,Business,BusinessUserMapping]]:
+        stmt = select(User,Business,BusinessUserMapping).select_from(User).outerjoin(BusinessUserMapping).outerjoin(Business).where(User.clerk_id == clerk_id)
+        result = await self.db.execute(stmt)
+        return result.mappings().all()
 
     async def get_by_email(self, email: str) -> Optional[User]:
         stmt = select(User).where(User.email == email)

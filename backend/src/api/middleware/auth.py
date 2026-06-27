@@ -5,6 +5,9 @@ from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from core.config import clerk_config, security_config
+from core.logger import get_scaly_logger
+logger = get_scaly_logger(name=__name__)
+
 
 _jwks_cache: dict | None = None
 
@@ -24,10 +27,12 @@ async def _get_jwks() -> dict:
 class ClerkAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.url.path in security_config.PUBLIC_PATHS:
+            
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
+            logger.error(f"Missing or invalid Authorization header for path: {request.url.path}")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"detail": "Missing or invalid Authorization header"},
@@ -47,6 +52,7 @@ class ClerkAuthMiddleware(BaseHTTPMiddleware):
                     break
 
             if not rsa_key:
+                logger.error(f"Unable to find signing key for path: {request.url.path}")
                 return JSONResponse(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     content={"detail": "Unable to find signing key"},
@@ -62,14 +68,16 @@ class ClerkAuthMiddleware(BaseHTTPMiddleware):
             request.state.user = payload
 
         except jwt.ExpiredSignatureError:
+            logger.error(f"Token has expired: {token}")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"detail": "Token has expired"},
             )
         except jwt.InvalidTokenError:
+            logger.error(f"Invalid token: {token}")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"detail": "Invalid token"},
             )
-
+        logger.info(f"User authenticated: {payload}")
         return await call_next(request)

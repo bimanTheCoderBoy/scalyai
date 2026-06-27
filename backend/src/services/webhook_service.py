@@ -19,7 +19,7 @@ class WebhookService:
         # if await self.cache_repo.is_duplicate(event.event_id):
         #     logger.info(f"Event {event.event_id} is a duplicate")
         #     return
-
+        logger.info(f"Ingesting event: {event.event_id}")
         event_obj = WebhookEvent(
             event_id=event.event_id,
             type=event.type,

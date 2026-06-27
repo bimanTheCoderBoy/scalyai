@@ -1,7 +1,7 @@
 import asyncio
 from core.celery import celery_app
 from core.logger import get_scaly_logger
-from db.session import AsyncSessionLocal
+from db.session import worker_session_factory
 from core.redis import get_redis, init_redis, close_redis
 from schemas.webhook_schema import WebhookEventDTO
 from models.webhook_events import WebhookEventStatus
@@ -27,8 +27,9 @@ def process_clerk_event(self, event_data: dict):
 
 async def _process_clerk_event(task, event_data: dict):
     event = WebhookEventDTO.model_validate(event_data)
+    logger.info(f"Event type: {event.type}, Event data keys: {event.data.keys()}")
 
-    async with AsyncSessionLocal() as session:
+    async with worker_session_factory() as session:
         try:
             await init_redis()
             redis = get_redis()
@@ -60,7 +61,7 @@ async def _process_clerk_event(task, event_data: dict):
 
 
 async def _mark_failed(event_id: str):
-    async with AsyncSessionLocal() as session:
+    async with worker_session_factory() as session:
         try:
             webhook_repo = WebhookRepository(db=session)
             cache_repo = WebhookCacheRepository(cache=get_redis())

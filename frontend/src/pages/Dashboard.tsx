@@ -1,8 +1,16 @@
-import { useUser } from "@clerk/react"
+import { useUser,useAuth } from "@clerk/react"
+import { useEffect } from "react"
 export default function Dashboard() {
 
   const { user } = useUser()
-  console.log("user", user)
+  const {getToken} = useAuth()
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await getToken()
+      console.log(token)
+    }
+    fetchData()
+  }, [getToken])
   return (
     <div>
       <h1 className="text-xl font-semibold">Dashboard</h1>

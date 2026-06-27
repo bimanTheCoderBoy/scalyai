@@ -9,7 +9,7 @@ from api.v1.webhooks.clerk import router as webhooks_router
 from api.routes.upload import upload_file
 from api.middleware.auth import ClerkAuthMiddleware
 from core.redis import init_redis, close_redis
-
+from api.v1.me import user_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -37,15 +37,15 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.include_router(webhooks_router)
+    router = APIRouter()
+
+    router.add_api_route("/upload", upload_file, methods=["POST"])
+    router.include_router(user_router)
+    router.include_router(webhooks_router)
+    app.include_router(router)
     app.add_exception_handler(BaseAppException, handle_api_exception)
     app.add_exception_handler(Exception, handle_api_generic_exception)
     return app
 
 
 app = create_app()
-router = APIRouter()
-
-router.add_api_route("/upload", upload_file, methods=["POST"])
-
-app.include_router(router)

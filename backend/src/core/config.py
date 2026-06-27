@@ -18,6 +18,8 @@ class DatabaseConfig:
 class RedisConfig:
     def __init__(self):
         self.REDIS_PORT = os.getenv("REDIS_PORT", "")
+        self.REDIS_DB = os.getenv("REDIS_DB", "")
+        self.REDIS_HOST = os.getenv("REDIS_HOST", "")
 
 class ClerkConfig:
     def __init__(self) -> None:
@@ -30,20 +32,25 @@ class SecurityConfig:
         self.PUBLIC_PATHS = {
             "/webhooks/clerk/",
             "/health",
+            "/docs",
+            "/ok",
+            "/info",
+            "/threads",
+            "/runs",
+            "/assistants",
+            "/store",
+            "/metadata",
         }
-class ClerkConfig:
-    def __init__(self):
-        self.CLERK_WEBHOOK_SECRET = os.getenv("CLERK_WEBHOOK_SECRET", "")
 
 
 class CeleryConfig:
     def __init__(self):
         self.CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "")
         self.CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "")
+        
 #singletone 
 database_config = DatabaseConfig()
 redis_config = RedisConfig()
 clerk_config = ClerkConfig()
 security_config = SecurityConfig()
-clerk_config = ClerkConfig()
 celery_config = CeleryConfig()

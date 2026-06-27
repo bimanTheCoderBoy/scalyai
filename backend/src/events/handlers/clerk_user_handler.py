@@ -15,8 +15,8 @@ class ClerkUserHandler:
             logger.info(f"Handling user created event: {event.data}")
             user_dto = UserDTO(
                 clerk_id=event.data.get("id"),
-                name=event.data.get("first_name") + " " + event.data.get("last_name"),
-                email=event.data.get("email_addresses",[{"email_address": None}])[0].get("email_address")
+                name=event.data.get("first_name", "") + " " + event.data.get("last_name", ""),
+               email = (event.data.get("email_addresses") or [{"email_address": ""}])[0].get("email_address", "")
             )
             new_user = await self.user_service.create_user(user_dto)
             logger.info(f"User created: {new_user}")

@@ -41,3 +41,6 @@ class UserAlreadyExistsException(BaseAppException):
 class UserNotFoundException(BaseAppException):
     def __init__(self, message: str = "User not found", status_code: int = 404):
         super().__init__(message, status_code)
+class UserGetFailedException(BaseAppException):
+    def __init__(self, message: str = "Failed to get user", status_code: int = 500):
+        super().__init__(message, status_code)

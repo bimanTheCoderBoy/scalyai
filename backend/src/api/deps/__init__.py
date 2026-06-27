@@ -1,5 +1,6 @@
 from core.redis import get_redis
 from api.deps.uow.webhook_uow import WebhookUnitOfWork
+from api.deps.uow.user_uow import UserUnitOfWork
 
 
 def get_webhook_uow() -> WebhookUnitOfWork:
@@ -17,3 +18,6 @@ def get_current_user(request: Request):
         )
 
     return user
+
+def get_user_uow() -> UserUnitOfWork:
+    return UserUnitOfWork()
