@@ -26,8 +26,7 @@ async def _get_jwks() -> dict:
 
 class ClerkAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if request.url.path in security_config.PUBLIC_PATHS:
-            
+        if not any(path in request.url.path for path in security_config.PRIVATE_PATHS):
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
@@ -64,7 +63,13 @@ class ClerkAuthMiddleware(BaseHTTPMiddleware):
                 algorithms=["RS256"],
                 issuer=issuer,
             )
-
+            #check userid is present in the token
+            if not payload["sub"]:
+                logger.error(f"User ID is missing from the token for path: {request.url.path}")
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"detail": "User ID is missing from the token"},
+                )
             request.state.user = payload
 
         except jwt.ExpiredSignatureError:

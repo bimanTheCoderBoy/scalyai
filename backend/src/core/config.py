@@ -29,17 +29,9 @@ class ClerkConfig:
 
 class SecurityConfig:
     def __init__(self) -> None:
-        self.PUBLIC_PATHS = {
-            "/webhooks/clerk/",
-            "/health",
-            "/docs",
-            "/ok",
-            "/info",
-            "/threads",
-            "/runs",
-            "/assistants",
-            "/store",
-            "/metadata",
+        self.PRIVATE_PATHS = {
+            "/api/v1/me",
+            "/api/v1/business",
         }
 
 

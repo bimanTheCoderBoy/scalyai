@@ -2,9 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.users import User
 from models.business_user_mappings import BusinessUserMapping
 from models.businesses import Business
-from sqlalchemy.exc import IntegrityError,SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 from core.logger import get_scaly_logger
-from core.exceptions.exceptions import UserCreationFailedException, UserAlreadyExistsException
+from core.exceptions.exceptions import UserAlreadyExistsException, SameValueAlreadyExists
 from sqlalchemy import select
 from typing import Optional, Tuple
 logger = get_scaly_logger(name=__name__)
@@ -21,21 +21,27 @@ class UserRepository:
         except IntegrityError as e:
             logger.error(f"IntegrityError while creating user: {e}")
             raise UserAlreadyExistsException()
-        except SQLAlchemyError as e:
-            logger.error(f"SQLAlchemyError while creating user: {e}")
-            raise UserCreationFailedException()
+
     
     async def get_by_clerk_id(self, clerk_id: str) -> Optional[User]:
         stmt = select(User).where(User.clerk_id == clerk_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
-    async def get_user_and_business_by_clerk_id(self, clerk_id: str) -> Optional[Tuple[User,Business,BusinessUserMapping]]:
-        stmt = select(User,Business,BusinessUserMapping).select_from(User).outerjoin(BusinessUserMapping).outerjoin(Business).where(User.clerk_id == clerk_id)
-        result = await self.db.execute(stmt)
-        return result.mappings().all()
 
     async def get_by_email(self, email: str) -> Optional[User]:
         stmt = select(User).where(User.email == email)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+    
+    async def update(self, user: User, data: dict) -> User:
+        for key, value in data.items():
+            setattr(user, key, value)
+        try:
+          await self.db.flush()
+        except IntegrityError as e:
+            logger.error(f"IntegrityError while updating user: {e}")
+            raise SameValueAlreadyExists()
+        await self.db.refresh(user)
+        return user
+    

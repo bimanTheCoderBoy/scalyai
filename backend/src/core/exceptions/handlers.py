@@ -1,6 +1,7 @@
 from fastapi.responses import JSONResponse
 from .exceptions import BaseAppException
 from core.logger import get_scaly_logger
+from sqlalchemy.exc import SQLAlchemyError
 logger = get_scaly_logger(name=__name__)
 from fastapi import Request
 
@@ -18,4 +19,10 @@ async def handle_api_generic_exception(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "An unexpected error occurred"}
     )
-    
+
+async def handle_api_database_exception(request: Request, exc: SQLAlchemyError):
+    logger.error(f"Database Exception: {exc} - {type(exc)}")
+    return JSONResponse(
+            status_code=500,
+            content={"detail": "An unexpected database error occurred"}
+    )
