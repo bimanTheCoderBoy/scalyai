@@ -15,9 +15,9 @@ class BusinessInviteStatus(enum.Enum):
 class BusinessInvite(BaseModelMixin,Base):
     __tablename__ = "business_invites"
 
-    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id"), nullable=False)
-    from_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    to_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    from_user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    to_user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     role: Mapped[BusinessUserRole]= mapped_column(Enum(BusinessUserRole), nullable=False)
     status: Mapped[BusinessInviteStatus]= mapped_column(Enum(BusinessInviteStatus), nullable=False)
 

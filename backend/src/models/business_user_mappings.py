@@ -1,10 +1,11 @@
 from enum import Enum
 from db import Base, BaseModelMixin
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, Index
+from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, Index , PrimaryKeyConstraint
 from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
-
+from datetime import datetime
+from sqlalchemy import DateTime, func
 import enum
 class BusinessUserRole(enum.Enum):
     OWNER = "owner"
@@ -12,11 +13,11 @@ class BusinessUserRole(enum.Enum):
     MEMBER = "member"
 
 
-class BusinessUserMapping(BaseModelMixin,Base):
+class BusinessUserMapping(Base):
     __tablename__ = "business_user_mappings"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, index=True)
 
     role: Mapped[BusinessUserRole]= mapped_column(Enum(BusinessUserRole), nullable=False)
     permissions: Mapped[dict] = mapped_column(JSON)
@@ -24,9 +25,10 @@ class BusinessUserMapping(BaseModelMixin,Base):
     # Relationships
     user = relationship("User", back_populates="business_user_mappings")
     business = relationship("Business", back_populates="business_user_mappings")
-
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     # Constraints
     __table_args__ = (
-        UniqueConstraint("user_id", "business_id", name="uix_user_business_mapping"),
-       
+        # UniqueConstraint("user_id", "business_id", name="uix_user_business_mapping"),
+        PrimaryKeyConstraint("user_id", "business_id"),
     )
