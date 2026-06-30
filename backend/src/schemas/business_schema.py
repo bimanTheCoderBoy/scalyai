@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from models.business_user_mappings import BusinessUserRole
 from datetime import datetime
 class BusinessUserDTO(BaseModel):
@@ -23,11 +23,17 @@ class CreateBusinessDTO(BaseModel):
     industry: str = Field(..., description="Industry of the business")
 
 class ResponseBusinessMemberDTO(BaseModel):
+    id: int = Field(..., description="ID of the member")
     name: str = Field(..., description="Name of the member")
     email: str = Field(..., description="Email of the member")
     role: BusinessUserRole = Field(..., description="Role of the member")
     permissions: dict = Field(..., description="Permissions of the member")
-   
-    
 
+class BusinessPatchDTO(BaseModel):
+    name: Optional[str] = Field(None, description="Name of the business")
+    description: Optional[str] = Field(None, description="Description of the business")
+    industry: Optional[str] = Field(None, description="Industry of the business")
 
+class BusinessMemberPatchDTO(BaseModel):
+    role: Optional[BusinessUserRole] = Field(None, description="Role of the member")
+    permissions: Optional[dict] = Field(None, description="Permissions of the member")

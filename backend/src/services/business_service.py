@@ -54,4 +54,35 @@ class BusinessService:
         )   
         return response_business_dto
     
-    
+    async def patch_business_details(self, business_id: int, patch_data: dict) -> Optional[ResponseBusinessDTO]:
+        business = await self.business_repo.get_by_id(business_id)
+        if not business:
+            logger.error(f"Business not found for id: {business_id}")
+            raise BusinessNotFoundException()
+        await self.business_repo.update(business, patch_data)
+
+        response_business_dto = ResponseBusinessDTO(
+            id=business.id,
+            name=business.name,
+            description=business.description,
+            industry=business.industry,
+            created_at=business.created_at,
+            updated_at=business.updated_at
+        )
+        return response_business_dto 
+
+    async def delete_business(self, business_id: int) -> Optional[ResponseBusinessDTO]:
+        business = await self.business_repo.get_by_id(business_id)
+        if not business:
+            logger.error(f"Business not found for id: {business_id}")
+            raise BusinessNotFoundException()
+        await self.business_repo.delete(business)
+        response_business_dto = ResponseBusinessDTO(
+            id=business.id,
+            name=business.name,
+            description=business.description,
+            industry=business.industry,
+            created_at=business.created_at,
+            updated_at=business.updated_at
+        )
+        return response_business_dto

@@ -73,7 +73,13 @@ class BusinessCreationFailedException(BaseAppException):
     def __init__(self, message: str = "Failed to create business", status_code: int = 500):
         super().__init__(message, status_code)
 
+class BusinessUpdateDetailsPatchFailedException(BaseAppException):
+    def __init__(self, message: str = "Failed to update business details", status_code: int = 500):
+        super().__init__(message, status_code)
 
+class BusinessDeletionFailedException(BaseAppException):
+    def __init__(self, message: str = "Failed to delete business", status_code: int = 500):
+        super().__init__(message, status_code)
 #Business Member Exceptions
 class BusinessMemberAlreadyExistsException(BaseAppException):
     def __init__(self, message: str = "Business member already exists", status_code: int = 400):
@@ -87,4 +93,11 @@ class BusinessMemberAdditionFailedException(BaseAppException):
 
 class YouAreNotAllowedToAccessThisBusiness(BaseAppException):
     def __init__(self, message: str = "You are not a allowed to access this business", status_code: int = 403):
+        super().__init__(message, status_code)
+class BusinessMemberDeletionFailedException(BaseAppException):
+    def __init__(self, message: str = "Failed to delete business member", status_code: int = 500):
+        super().__init__(message, status_code)
+
+class BusinessMemberUpdateFailedException(BaseAppException):
+    def __init__(self, message: str = "Failed to update business member", status_code: int = 500):
         super().__init__(message, status_code)

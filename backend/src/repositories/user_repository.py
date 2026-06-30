@@ -17,6 +17,7 @@ class UserRepository:
         try:
             self.db.add(user)
             await self.db.flush()
+            await self.db.refresh(user)
             return user
         except IntegrityError as e:
             logger.error(f"IntegrityError while creating user: {e}")

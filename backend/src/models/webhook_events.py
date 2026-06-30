@@ -9,6 +9,7 @@ class WebhookEventStatus(enum.Enum):
     PROCESSING = "processing"
     COMPLETED = "completed"
     FAILED = "failed"
+    SKIPPED = "skipped"
 
 class WebhookEvent(BaseModelMixin,Base):
     __tablename__ = "webhook_events"

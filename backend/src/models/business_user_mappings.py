@@ -16,8 +16,8 @@ class BusinessUserRole(enum.Enum):
 class BusinessUserMapping(Base):
     __tablename__ = "business_user_mappings"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    business_id: Mapped[int] = mapped_column(ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, index=True)
 
     role: Mapped[BusinessUserRole]= mapped_column(Enum(BusinessUserRole), nullable=False)
     permissions: Mapped[dict] = mapped_column(JSON)

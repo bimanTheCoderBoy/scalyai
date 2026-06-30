@@ -42,8 +42,11 @@ async def _process_clerk_event(task, event_data: dict):
             handler = ClerkUserHandler(user_service=user_service, webhook_service=webhook_service)
 
             await webhook_service.update_event_status(event.event_id, WebhookEventStatus.PROCESSING)
-            await handler.handle(event)
-            await webhook_service.update_event_status(event.event_id, WebhookEventStatus.COMPLETED)
+            success = await handler.handle(event)
+            if not success:
+                await webhook_service.update_event_status(event.event_id, WebhookEventStatus.SKIPPED)
+            else:   
+                await webhook_service.update_event_status(event.event_id, WebhookEventStatus.COMPLETED)
 
             await session.commit()
             logger.info(f"Successfully processed clerk event: {event.event_id}")

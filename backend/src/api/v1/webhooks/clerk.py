@@ -19,13 +19,14 @@ async def webhook_clerk(
 ):
     payload = await request.body()
     headers = request.headers
-
+    logger.info(f"webhook hit successfully")
     verified = verify_clerk_webhook(payload, headers)
+    
 
     try:
         schema = WebhookEventDTO.model_validate(
             {
-                "event_id": verified.get("instance_id"),
+                "event_id": headers.get("svix-id"),
                 "type": verified.get("type"),
                 "event_timestamp": datetime.fromtimestamp(verified.get("timestamp") / 1000),
                 "event_status": WebhookEventStatus.PENDING,

@@ -29,16 +29,15 @@ class BusinessRepository:
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def update(self, business: Business, data: dict) -> Business:
+    async def update(self, business: Business, data: dict) -> None:
         for key, value in data.items():
             setattr(business, key, value)
-
         try:
             await self.db.flush()
+            await self.db.refresh(business)
         except IntegrityError as e:
             logger.error(f"IntegrityError while updating business: {e}")
             raise SameValueAlreadyExists()
-        return business
 
 
     async def delete(self, business: Business) -> None:
@@ -48,11 +47,6 @@ class BusinessRepository:
         except IntegrityError as e:
             logger.error(f"IntegrityError while deleting business: {e}")
             raise BusinessDeletionFailedException()
-        return business
+        
     
    
-    # async def get_businesses_by_user_clerk_id(self, user_clerk_id: str) -> List[Business]:
-    #     stmt = select(Business).join(BusinessUserMapping).join(User).where(User.clerk_id == user_clerk_id)
-    #     result = await self.db.execute(stmt)
-    #     return result.scalars().all()
-    

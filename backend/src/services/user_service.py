@@ -14,13 +14,22 @@ class UserService:
     def __init__(self, user_repo: UserRepository):
         self.user_repo = user_repo
 
-    async def create_user(self, user: UserDTO) -> Optional[User]:
+    async def create_user_through_clerk(self, user: UserDTO) ->None:
+        #find if user already exists
+        existing_user = await self.user_repo.get_by_clerk_id(user.clerk_id)
+        if existing_user:
+            logger.info(f"User already exists for clerk_id: {user.clerk_id}")
+            return
+        
+        
         user_obj = User(
             clerk_id=user.clerk_id,
             name=user.name,
             email=user.email
         )
-        return await self.user_repo.create(user_obj)
+        new_user = await self.user_repo.create(user_obj)
+        logger.info(f"New user created for clerk_id: {user.clerk_id}")
+        return
 
 
     async def get_user_by_clerk_id(self, clerk_id: str) -> Optional[CurrentUser]:
@@ -38,9 +47,13 @@ class UserService:
         user = await self.user_repo.get_by_clerk_id(clerk_id)
         if not user:
             logger.error(f"User not found for clerk_id: {clerk_id}")
-            raise UserNotFoundException()
-
-        
+            user=User(
+                clerk_id=clerk_id,
+                name=None,
+                email=None
+            )
+            user=await self.user_repo.create(user)
+            logger.info(f"New user created for clerk_id: {clerk_id}")
 
         return UserFullDetailsDTO(
             id=user.id,

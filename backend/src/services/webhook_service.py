@@ -19,7 +19,7 @@ class WebhookService:
         # if await self.cache_repo.is_duplicate(event.event_id):
         #     logger.info(f"Event {event.event_id} is a duplicate")
         #     return
-        logger.info(f"Ingesting event: {event.event_id}")
+        logger.info(f"Ingesting event: {event.event_id} {event.type}")
         event_obj = WebhookEvent(
             event_id=event.event_id,
             type=event.type,
@@ -28,7 +28,7 @@ class WebhookService:
             data=event.data
         )
         await self.event_repo.create(event_obj)
-        await self.cache_repo.mark_processed(event.event_id)
+        # await self.cache_repo.mark_processed(event.event_id)
 
         from worker.tasks.clerk_events_proess_task import process_clerk_event
         process_clerk_event.delay(event.model_dump(mode="json"))

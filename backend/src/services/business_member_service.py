@@ -6,6 +6,8 @@ from core.logger import get_scaly_logger
 from core.exceptions.exceptions import BusinessNotFoundException
 from repositories.user_repository import UserRepository
 from schemas.business_schema import BusinessUserDTO
+from models.business_user_mappings import BusinessUserRole
+from core.exceptions.exceptions import BusinessMemberNotFoundException
 logger = get_scaly_logger(name=__name__)
 
 class BusinessMemberService:
@@ -22,6 +24,13 @@ class BusinessMemberService:
             return False
         return True
 
+    async def have_user_access_to_update_or_delete_business(self, business_id: int, user_id: int) -> bool:
+        business_user_mapping = await self.business_member_repo.get_member_by_business_id_and_user_id(business_id, user_id)
+        if not business_user_mapping:
+            return False 
+        if business_user_mapping.role == BusinessUserRole.OWNER or business_user_mapping.role == BusinessUserRole.ADMIN:
+            return True
+        return False
 
     async def get_members_of_business(self, business_id: int) -> List[ResponseBusinessMemberDTO]: 
         # is business id valid?
@@ -33,15 +42,16 @@ class BusinessMemberService:
         members = await self.business_member_repo.get_members_of_business(business_id)
         
         return [ResponseBusinessMemberDTO(
+            id=user.id,
             name=user.name,
             email=user.email,
             role=business_user_mapping.role,
             permissions=business_user_mapping.permissions
         ) for user, business_user_mapping in members]
+
+
     
     async def get_businesses_by_member_id(self, member_id: int) -> List[BusinessUserDTO]:
-
-
         businesses = await self.business_member_repo.get_businesses_by_member_id(member_id)
         return [BusinessUserDTO(
             name=business.name,
@@ -50,3 +60,32 @@ class BusinessMemberService:
             permissions=business_user_mapping.permissions,
             role=business_user_mapping.role
         ) for business_user_mapping, business in businesses]
+
+    
+    async def patch_business_member(self, business_id: int, member_id: int, patch_data: dict) -> ResponseBusinessMemberDTO:
+        business_member = await self.business_member_repo.get_member_by_business_id_and_user_id(business_id, member_id)
+        if not business_member:
+            logger.error(f"Business member not found for id: {member_id}")
+            raise BusinessMemberNotFoundException()
+        await self.business_member_repo.update(business_member, patch_data)
+        return ResponseBusinessMemberDTO(
+            id=member_id,
+            name=business_member.user.name,
+            email=business_member.user.email,
+            role=business_member.role,
+            permissions=business_member.permissions
+        )
+    
+    async def delete_business_member(self, business_id: int, member_id: int) -> ResponseBusinessMemberDTO:
+        business_member = await self.business_member_repo.get_member_by_business_id_and_user_id(business_id, member_id)
+        if not business_member:
+            logger.error(f"Business member not found for id: {member_id}")
+            raise BusinessMemberNotFoundException()
+        await self.business_member_repo.delete(business_member)
+        return ResponseBusinessMemberDTO(
+            id=member_id,
+            name=business_member.user.name,
+            email=business_member.user.email,
+            role=business_member.role,
+            permissions=business_member.permissions
+        )
