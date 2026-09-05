@@ -1,15 +1,13 @@
 # Environment files
-backend/.env
-frontend/.env
-.env
+/**/*.env
 
 # Node modules
 frontend/node_modules/
 node_modules/
 
 # Python virtual environments
+server/.venv/
 backend/.venv/
-backend/venv/
 
 # Python bytecode
 __pycache__/

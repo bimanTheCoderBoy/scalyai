@@ -5,8 +5,10 @@ from repositories.business_member_repository import BusinessMemberRepository
 from services.user_service import UserService
 from services.business_service import BusinessService
 from services.business_member_service import BusinessMemberService
-
-
+from services.invitation_service import BusinessInviteService
+from services.notification_service import NotificationService
+from repositories.notification_repository import NotificationRepository
+from repositories.invitations_repository import InvitationsRepository
 class InfrastructureUnitOfWork(BaseUnitOfWork):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -16,7 +18,8 @@ class InfrastructureUnitOfWork(BaseUnitOfWork):
         self._user_service: UserService | None = None
         self._business_service: BusinessService | None = None
         self._business_member_service: BusinessMemberService | None = None
-
+        self._invitation_service: BusinessInviteService | None = None
+        self._notification_service: NotificationService | None = None
     @property
     def user_repo(self) -> UserRepository:
         if self._user_repo is None:
@@ -59,3 +62,22 @@ class InfrastructureUnitOfWork(BaseUnitOfWork):
                 user_repo=self.user_repo,
             )
         return self._business_member_service
+
+    @property
+    def notification_service(self) -> NotificationService:
+        if self._notification_service is None:
+            notification_repo = NotificationRepository(db=self.session)
+            self._notification_service = NotificationService(notification_repo=notification_repo)
+        return self._notification_service
+
+    @property
+    def invitation_service(self) -> BusinessInviteService:
+        if self._invitation_service is None:
+            invitations_repo = InvitationsRepository(db=self.session)
+            self._invitation_service = BusinessInviteService(
+                invitations_repo=invitations_repo,
+                notification_send_service=self.notification_service,
+            )
+        return self._invitation_service
+
+   

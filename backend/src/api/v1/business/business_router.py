@@ -3,7 +3,7 @@ from schemas.business_schema import CreateBusinessDTO, ResponseBusinessDTO,Busin
 from core.logger import get_scaly_logger
 from api.deps.uow.infrastructure_uow import InfrastructureUnitOfWork
 from api.deps import get_uow
-from core.exceptions.exceptions import BusinessCreationFailedException, YouAreNotAllowedToAccessThisBusiness, NoPatchDataFoundException, BusinessUpdateDetailsPatchFailedException, BusinessDeletionFailedException, BusinessMemberUpdateFailedException     
+from core.exceptions.exceptions import BusinessCreationFailedException, YouAreNotAllowedToAccessThisBusiness, NoPatchDataFoundException, BusinessUpdateDetailsPatchFailedException, BusinessDeletionFailedException, BusinessMemberUpdateFailedException, UserNotFoundException     
 from core.exceptions.exceptions import BusinessMemberDeletionFailedException
 from fastapi import Depends, HTTPException
 from fastapi import Request
@@ -36,6 +36,8 @@ async def get_business_by_id(business_id: int, request: Request, uow: Infrastruc
     async with uow:
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         is_member = await uow.business_member_service.is_user_a_member_of_business(business_id, user_id=user.id)
         if not is_member:
             raise YouAreNotAllowedToAccessThisBusiness()
@@ -49,6 +51,8 @@ async def patch_business(business_id: int, request: Request, patch: BusinessPatc
     async with uow:
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         have_access = await uow.business_member_service.have_user_access_to_update_or_delete_business(business_id, user_id=user.id)
         if not have_access:
             raise YouAreNotAllowedToAccessThisBusiness()
@@ -71,6 +75,8 @@ async def delete_business(business_id: int, request: Request, uow: Infrastructur
     async with uow:
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         have_access = await uow.business_member_service.have_user_access_to_update_or_delete_business(business_id, user_id=user.id)
         if not have_access:
             raise YouAreNotAllowedToAccessThisBusiness()
@@ -90,6 +96,8 @@ async def get_members_of_business(business_id: int, request: Request, uow: Infra
     async with uow:
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         is_member = await uow.business_member_service.is_user_a_member_of_business(business_id, user_id=user.id)
         if not is_member:
             raise YouAreNotAllowedToAccessThisBusiness()
@@ -104,6 +112,8 @@ async def patch_business_member(business_id: int, member_id: int, request: Reque
         #checking auth of caller
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         have_access = await uow.business_member_service.have_user_access_to_update_or_delete_business(business_id, user_id=user.id)
         if not have_access:
             raise YouAreNotAllowedToAccessThisBusiness("You are not allowed to update the role or permissions of this member")
@@ -127,6 +137,8 @@ async def delete_business_member(business_id: int, member_id: int, request: Requ
         #checking auth of caller
         clerk_id = request.state.user["sub"]
         user = await uow.user_service.get_user_by_clerk_id(clerk_id=clerk_id)
+        if user is None:
+            raise UserNotFoundException()
         have_access = await uow.business_member_service.have_user_access_to_update_or_delete_business(business_id, user_id=user.id)
         if not have_access:
             raise YouAreNotAllowedToAccessThisBusiness("You are not allowed to delete this member")

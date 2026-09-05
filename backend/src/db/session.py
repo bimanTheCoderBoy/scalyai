@@ -20,9 +20,7 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False
 )
 
-@asynccontextmanager
-async def worker_session_factory():
-    engine = create_async_engine(
+worker_engine = create_async_engine(
     DATABASE_URL,
     # echo=True,
     pool_size=2,
@@ -30,8 +28,12 @@ async def worker_session_factory():
     pool_timeout=30,
     pool_pre_ping=True
    )
+
+@asynccontextmanager
+async def worker_session_factory():
+    
     session_maker = async_sessionmaker[AsyncSession](
-        engine,
+        worker_engine,
         class_=AsyncSession,
         expire_on_commit=False,
         autoflush=False
@@ -40,4 +42,4 @@ async def worker_session_factory():
         try:
             yield session
         finally:
-            await engine.dispose()
+            await session.close()

@@ -1,5 +1,5 @@
 @echo off
 start "Frontend" cmd /k "cd /d frontend && npm run dev"
-start "Backend"  cmd /k "cd /d backend && .venv\Scripts\activate && langgraph dev --allow-blocking"
-start "Celery"   cmd /k "cd /d backend\src && ..\.venv\Scripts\activate && celery -A core.celery:celery_app worker --queues=clerk_events --loglevel=info --pool=solo"
-start "redis & postgres with docker compose" cmd /k "cd /d . && docker compose up -d"  
+start "Backend"  cmd /k "cd /d server\src && ..\.venv\Scripts\activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+start "TaskIQ Worker" cmd /k "cd /d server\src && ..\.venv\Scripts\activate && taskiq worker config.taskiq:broker --reload"
+start "redis & postgres with docker compose" cmd /k "cd /d . && docker compose up -d"
