@@ -1,4 +1,3 @@
-import os
 import httpx
 import jwt
 from fastapi import Request, HTTPException, status
